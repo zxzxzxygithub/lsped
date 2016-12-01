@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">LibSpeedTest</string>
+    <string name="text_speed_test">Speed Test</string>
+
+    <string name="text_quick_test">Quick Test</string>
+    <string name="text_advanced_test">Advanced Test</string>
+
+
+    <string name="text_network_error">Network Error</string>
+    <string name="msg_speedtest_error_dialog">This server seems sleepy, please change a server to retry!</string>
+    <string name="text_speedtest_error_dialog_positive">Change server</string>
+
+    <string name="dialog_cancel">Cancel</string>
+
 </resources>

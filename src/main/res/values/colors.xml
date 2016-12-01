@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="speedtest_colorPrimary">#3f51b5</color>
+
+
+
+    <color name="speedtest_btn_green_normal">#1ecb7c</color>
+    <color name="speedtest_btn_green_pressed">#6fdeab</color>
+
+
+    <color name="speedtest_bg_download_speed_connected">#885c6bc0</color>
+    <color name="speedtest_bg_upload_speed_connected">#881ecb7c</color>
+    <color name="speedtest_bg_download_speed_unconnected">#445c6bc0</color>
+    <color name="speedtest_bg_upload_speed_unconnected">#441ecb7c</color>
+
+
+    <!--fragment-->
+
+    <color name="color_gray_unsign">#e5e5e5</color>
+
+    <color name="white">#ffffff</color>
+
+</resources>
