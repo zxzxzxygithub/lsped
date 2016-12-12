@@ -40,6 +40,7 @@ public abstract class SpeedTestFragment extends Fragment {
     private TextView mStartSpeedTestBtn;
     private TextView mDownloadSpeedTv;
     private TextView mUploadSpeedTv;
+    private String ip = null;
 
     // Speed Test
     private PanelView mPanelView;
@@ -141,7 +142,8 @@ public abstract class SpeedTestFragment extends Fragment {
                     mHandler.sendEmptyMessage(MSG_WAITING_COUNTDOWN);
                     mSpeeds.clear();
                     mTestProgressDesc.setText("Testing...");
-                    mSpeedTestManager.startTest(mOnDetectSpeedListener);
+                    ip= getVpnConnectedServerIp();
+                    mSpeedTestManager.startTest(mOnDetectSpeedListener, ip);
                     mTestProgressDesc.setVisibility(View.VISIBLE);
                     mProgressBar.setVisibility(View.VISIBLE);
                     mIsTesting = 1;
@@ -338,6 +340,8 @@ public abstract class SpeedTestFragment extends Fragment {
     public abstract boolean isShowAd();//是否显示广告
 
     public abstract void showAd();//显示广告
+
+    public abstract String getVpnConnectedServerIp();//设置ip（当vpn连接成功的时候可以设置ip）
 
 
 }

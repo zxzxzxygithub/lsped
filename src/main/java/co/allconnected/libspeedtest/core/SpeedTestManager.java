@@ -7,7 +7,7 @@ package co.allconnected.libspeedtest.core;
 public interface SpeedTestManager {
 
 
-    void startTest(OnDetectSpeedListener listener);
+    void startTest(OnDetectSpeedListener listener, String ip);
 
     void cancelTest();
 

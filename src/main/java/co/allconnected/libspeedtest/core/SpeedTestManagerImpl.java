@@ -3,6 +3,7 @@ package co.allconnected.libspeedtest.core;
 import android.net.TrafficStats;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -29,6 +30,14 @@ public class SpeedTestManagerImpl implements SpeedTestManager {
     private String sourceUrl1 = "http://speedtest.fremont.linode.com/100MB-fremont.bin";
     private String sourceUrl2 = "http://down.netspeedtestmaster.com/100mb.dat";
     private String sourceUrl3 = "http://cachefly.cachefly.net/100mb.test";
+    private String sourceUrl4 = "http://" + "%s" + "/20mb.dat";
+
+    private String speedStrategy = STRATEGY_MIXED;
+
+    private static final String STRATEGY_DEFAULT = "default";
+    private static final String STRATEGY_ONLY_SELF = "onlyself";
+    private static final String STRATEGY_ONLY_SOURCE3 = "onlysource3";
+    private static final String STRATEGY_MIXED = "mixed";
 
     private final long KB = 1024;
     private final long MB = 1024 * KB;
@@ -68,9 +77,8 @@ public class SpeedTestManagerImpl implements SpeedTestManager {
     };
 
 
-
     @Override
-    public void startTest(OnDetectSpeedListener listener) {
+    public void startTest(OnDetectSpeedListener listener, String ip) {
 
         if (mRxBytes == 0) {
             mRxBytes = TrafficStats.getTotalRxBytes();
@@ -82,15 +90,7 @@ public class SpeedTestManagerImpl implements SpeedTestManager {
         mListener = listener;
         mTimer = new Timer();
         for (int i = 0; i < 2; i++) {
-            DownloadTask downloadTask = new DownloadTask( sourceUrl1, listener);
-            DownloadTask downloadTask2 = new DownloadTask( sourceUrl2, listener);
-            DownloadTask downloadTask3 = new DownloadTask(sourceUrl3, listener);
-            mDownloadTaskList.add(downloadTask);
-            mDownloadTaskList.add(downloadTask2);
-           mDownloadTaskList.add(downloadTask3);
-            TaskManager.getInstance().submit(downloadTask);
-            TaskManager.getInstance().submit(downloadTask2);
-           TaskManager.getInstance().submit(downloadTask3);
+            useSpeedTestStrategy(listener,ip);
         }
         mStartDownloadBytes = TrafficStats.getTotalRxBytes();
         mRemoveCallback = false;
@@ -261,6 +261,31 @@ public class SpeedTestManagerImpl implements SpeedTestManager {
         map.put("unit", "kB/s");
 
         return map;
+    }
+
+    private void useSpeedTestStrategy(OnDetectSpeedListener listener, String ip) {
+
+        if (!TextUtils.isEmpty(ip)) {
+            sourceUrl4 = String.format(sourceUrl4, ip);
+            if (STRATEGY_ONLY_SELF.equals(speedStrategy)) {
+                sourceUrl1 = sourceUrl2 = sourceUrl3 = sourceUrl4;
+            } else if (STRATEGY_MIXED.equals(speedStrategy)) {
+                DownloadTask downloadTask = new DownloadTask(sourceUrl4, listener);
+                mDownloadTaskList.add(downloadTask);
+                TaskManager.getInstance().submit(downloadTask);
+            }
+        }
+
+        DownloadTask downloadTask = new DownloadTask(sourceUrl1, listener);
+        DownloadTask downloadTask2 = new DownloadTask(sourceUrl2, listener);
+        DownloadTask downloadTask3 = new DownloadTask(sourceUrl3, listener);
+
+        mDownloadTaskList.add(downloadTask);
+        mDownloadTaskList.add(downloadTask2);
+        mDownloadTaskList.add(downloadTask3);
+        TaskManager.getInstance().submit(downloadTask);
+        TaskManager.getInstance().submit(downloadTask2);
+        TaskManager.getInstance().submit(downloadTask3);
     }
 
 
