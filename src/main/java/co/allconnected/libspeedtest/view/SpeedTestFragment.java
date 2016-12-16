@@ -128,37 +128,46 @@ public abstract class SpeedTestFragment extends Fragment {
         public void onClick(View v) {
             int id = v.getId();
             if (id == R.id.btn_retest) {
+                View.OnClickListener leftButtonListener = getLeftButtonListener();
                 mIsRetest = true;
                 mTestPanelLayout.setVisibility(View.VISIBLE);
                 mResultPanelLayout.setVisibility(View.GONE);
-                mStartSpeedTestBtn.performClick();
                 mChartView.setSpeedColor(true);
+                if (leftButtonListener==null){
+                    doSpeedTest();
+                }else{
+                    leftButtonListener.onClick(v);
+                }
             } else if (id == R.id.btn_advanced_test) {
                 mStartSpeedTestBtn.setText(getResources().getString(R.string.text_quick_test));
                 mIsTesting = -1;
-                showAd();
+                doRightButtonAction();
             } else if (id == R.id.tv_start_speed_test) {
-                if (getResources().getString(R.string.text_quick_test).equalsIgnoreCase(((TextView) v).getText().toString())) {
-                    count = 0;
-                    mErrorCount = 0;
-                    mHandler.sendEmptyMessage(MSG_WAITING_COUNTDOWN);
-                    mSpeeds.clear();
-                    mTestProgressDesc.setText("Testing...");
-                    ip= getVpnConnectedServerIp();
-                    mSpeedTestManager.startTest(ip);
-                    mTestProgressDesc.setVisibility(View.VISIBLE);
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mIsTesting = 1;
-                    mStartSpeedTestBtn.setText(getResources().getString(android.R.string.cancel));
-                    mStartSpeedTestBtn.setBackgroundResource(R.drawable.button_disable);
-                    mIsRetest = false;
-                } else if (getResources().getString(android.R.string.cancel).equalsIgnoreCase(((TextView) v).getText().toString())) {
-                    mIsTesting = -1;
-                    reset();
-                }
+                doSpeedTest();
             }
         }
     };
+
+    public void doSpeedTest() {
+        if (getResources().getString(R.string.text_quick_test).equalsIgnoreCase(mStartSpeedTestBtn.getText().toString())) {
+            count = 0;
+            mErrorCount = 0;
+            mHandler.sendEmptyMessage(MSG_WAITING_COUNTDOWN);
+            mSpeeds.clear();
+            mTestProgressDesc.setText("Testing...");
+            ip= getVpnConnectedServerIp();
+            mSpeedTestManager.startTest(ip);
+            mTestProgressDesc.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
+            mIsTesting = 1;
+            mStartSpeedTestBtn.setText(getResources().getString(android.R.string.cancel));
+            mStartSpeedTestBtn.setBackgroundResource(R.drawable.button_disable);
+            mIsRetest = false;
+        } else if (getResources().getString(android.R.string.cancel).equalsIgnoreCase(mStartSpeedTestBtn.getText().toString())) {
+            mIsTesting = -1;
+            reset();
+        }
+    }
 
     int mErrorCount = 0;
     ArrayList<Float> mSpeeds = new ArrayList<>();
@@ -298,7 +307,7 @@ public abstract class SpeedTestFragment extends Fragment {
         mRetestBtn = (TextView) mView.findViewById(R.id.btn_retest);
         mRetestBtn.setOnClickListener(mViewClickListener);
         mAdvancedTestBtn = (TextView) mView.findViewById(R.id.btn_advanced_test);
-        if (!isShowAd()) {
+        if (!isShowRightButton()) {
             mAdvancedTestBtn.setVisibility(View.GONE);
         } else {
             mAdvancedTestBtn.setVisibility(View.VISIBLE);
@@ -346,9 +355,11 @@ public abstract class SpeedTestFragment extends Fragment {
 
     public abstract boolean isVpnConnected();//vpn是否连接上
 
-    public abstract boolean isShowAd();//是否显示广告
+    public abstract boolean isShowRightButton();//是否显示右侧按钮
 
-    public abstract void showAd();//显示广告
+    public abstract void doRightButtonAction();//右侧按钮的点击行为
+
+    public abstract View.OnClickListener getLeftButtonListener();//右侧广告的行为
 
     public abstract String getVpnConnectedServerIp();//设置ip（当vpn连接成功的时候可以设置ip）
 
