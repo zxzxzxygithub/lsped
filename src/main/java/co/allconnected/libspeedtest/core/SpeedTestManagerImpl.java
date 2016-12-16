@@ -78,23 +78,20 @@ public class SpeedTestManagerImpl implements SpeedTestManager {
 
 
     @Override
-    public void startTest(OnDetectSpeedListener listener, String ip) {
+    public void init() {
+        mRxBytes = TrafficStats.getTotalRxBytes();
+        mTxBytes = TrafficStats.getTotalTxBytes();
+    }
 
-        if (mRxBytes == 0) {
-            mRxBytes = TrafficStats.getTotalRxBytes();
-        }
-        if (mTxBytes == 0) {
-            mTxBytes = TrafficStats.getTotalTxBytes();
-        }
+    @Override
+    public void startTest(String ip) {
 
-        mListener = listener;
         mTimer = new Timer();
         for (int i = 0; i < 2; i++) {
-            useSpeedTestStrategy(listener,ip);
+            useSpeedTestStrategy(mListener, ip);
         }
         mStartDownloadBytes = TrafficStats.getTotalRxBytes();
         mRemoveCallback = false;
-        mHandler.postDelayed(mGetSpeedsRunnable, 1000);
         startTimer();
         mListener.onStart();
 
@@ -116,6 +113,12 @@ public class SpeedTestManagerImpl implements SpeedTestManager {
     @Override
     public String getAvgSpeed() {
         return getTrafficString((long) getProcessedAvg(mSpeedList)) + "/s";
+    }
+
+    @Override
+    public void showSpeed(OnDetectSpeedListener listener) {
+        this.mListener = listener;
+        mHandler.postDelayed(mGetSpeedsRunnable, 1000);
     }
 
 

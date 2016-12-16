@@ -108,6 +108,8 @@ public abstract class SpeedTestFragment extends Fragment {
         }
         mPanelView.setIsTesting(true);
         mSpeedTestManager = new SpeedTestManagerImpl();
+        mSpeedTestManager.init();
+        mSpeedTestManager.showSpeed(mOnDetectSpeedListener);
     }
 
 
@@ -143,7 +145,7 @@ public abstract class SpeedTestFragment extends Fragment {
                     mSpeeds.clear();
                     mTestProgressDesc.setText("Testing...");
                     ip= getVpnConnectedServerIp();
-                    mSpeedTestManager.startTest(mOnDetectSpeedListener, ip);
+                    mSpeedTestManager.startTest(ip);
                     mTestProgressDesc.setVisibility(View.VISIBLE);
                     mProgressBar.setVisibility(View.VISIBLE);
                     mIsTesting = 1;
@@ -326,6 +328,13 @@ public abstract class SpeedTestFragment extends Fragment {
         return R.mipmap.ic_directions_walk_green_24dp;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mSpeedTestManager!=null){
+            mSpeedTestManager.cancelTest();
+        }
+    }
 
     @Override
     public void onDestroyView() {
